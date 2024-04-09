@@ -1,5 +1,6 @@
-ARG FROM_IMAGE=alpine:latest
-FROM ${FROM_IMAGE}
+FROM alpine:latest
+LABEL authors="Daniel Hufschläger"
+#ARG USERNAME=appuser
 
 # ENV variables
 ENV GIT_REPOSITORY="" \
@@ -7,13 +8,15 @@ ENV GIT_REPOSITORY="" \
     GIT_BRANCH="main" \
     PYTHONUNBUFFERED=1
 
-ARG USERNAME=appuser
 # Install python3
-RUN apk add --update --no-cache python3 py3-pip && ln -sf python3 /usr/bin/python
+RUN apk add --update --no-cache python3 py3-pip git&&\
+    ln -sf python3 /usr/bin/python
+
 # Change user and working directory
-WORKDIR /app
+WORKDIR /data/app
 
 # Copy scripts
 COPY scripts/* ./scripts/
+RUN chmod +x ./scripts/entrypoint.sh
 
-CMD [ "python", "scripts/test.py" ]
+ENTRYPOINT ["./scripts/entrypoint.sh"]
